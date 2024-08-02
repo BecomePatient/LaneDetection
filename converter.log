@@ -1,0 +1,1115 @@
+已经成功加载模型，该模型训练的轮数为76,训练的最终损失为1.5718204975128174,开始进行SNN的转化。
+CombinedModel(
+  (bisenet): BiSeNetV2(
+    (detail): DetailBranch(
+      (S1): Sequential(
+        (0): ConvBNReLU(
+          (conv): Conv2d(3, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+          (bn): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+        (1): ConvBNReLU(
+          (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (bn): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+      )
+      (S2): Sequential(
+        (0): ConvBNReLU(
+          (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+          (bn): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+        (1): ConvBNReLU(
+          (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (bn): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+        (2): ConvBNReLU(
+          (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (bn): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+      )
+      (S3): Sequential(
+        (0): ConvBNReLU(
+          (conv): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+          (bn): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+        (1): ConvBNReLU(
+          (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (bn): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+        (2): ConvBNReLU(
+          (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (bn): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+      )
+    )
+    (segment): SegmentBranch(
+      (S1S2): StemBlock(
+        (conv): ConvBNReLU(
+          (conv): Conv2d(3, 16, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+          (bn): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+        (left): Sequential(
+          (0): ConvBNReLU(
+            (conv): Conv2d(16, 8, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (bn): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (relu): ReLU(inplace=True)
+          )
+          (1): ConvBNReLU(
+            (conv): Conv2d(8, 16, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+            (bn): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (relu): ReLU(inplace=True)
+          )
+        )
+        (right): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+        (fuse): ConvBNReLU(
+          (conv): Conv2d(32, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (bn): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+      )
+      (S3): Sequential(
+        (0): GELayerS2(
+          (conv1): ConvBNReLU(
+            (conv): Conv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (bn): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (relu): ReLU(inplace=True)
+          )
+          (dwconv1): Sequential(
+            (0): Conv2d(16, 96, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=16, bias=False)
+            (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (dwconv2): Sequential(
+            (0): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96, bias=False)
+            (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU(inplace=True)
+          )
+          (conv2): Sequential(
+            (0): Conv2d(96, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (shortcut): Sequential(
+            (0): Conv2d(16, 16, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=16, bias=False)
+            (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): Conv2d(16, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (relu): ReLU(inplace=True)
+        )
+        (1): GELayerS1(
+          (conv1): ConvBNReLU(
+            (conv): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (bn): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (relu): ReLU(inplace=True)
+          )
+          (dwconv): Sequential(
+            (0): Conv2d(32, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+            (1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU(inplace=True)
+          )
+          (conv2): Sequential(
+            (0): Conv2d(192, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (relu): ReLU(inplace=True)
+        )
+      )
+      (S4): Sequential(
+        (0): GELayerS2(
+          (conv1): ConvBNReLU(
+            (conv): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (bn): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (relu): ReLU(inplace=True)
+          )
+          (dwconv1): Sequential(
+            (0): Conv2d(32, 192, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=32, bias=False)
+            (1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (dwconv2): Sequential(
+            (0): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+            (1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU(inplace=True)
+          )
+          (conv2): Sequential(
+            (0): Conv2d(192, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (shortcut): Sequential(
+            (0): Conv2d(32, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=32, bias=False)
+            (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): Conv2d(32, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (relu): ReLU(inplace=True)
+        )
+        (1): GELayerS1(
+          (conv1): ConvBNReLU(
+            (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (bn): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (relu): ReLU(inplace=True)
+          )
+          (dwconv): Sequential(
+            (0): Conv2d(64, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=64, bias=False)
+            (1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU(inplace=True)
+          )
+          (conv2): Sequential(
+            (0): Conv2d(384, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (relu): ReLU(inplace=True)
+        )
+      )
+      (S5_4): Sequential(
+        (0): GELayerS2(
+          (conv1): ConvBNReLU(
+            (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (bn): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (relu): ReLU(inplace=True)
+          )
+          (dwconv1): Sequential(
+            (0): Conv2d(64, 384, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=64, bias=False)
+            (1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (dwconv2): Sequential(
+            (0): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+            (1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU(inplace=True)
+          )
+          (conv2): Sequential(
+            (0): Conv2d(384, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (shortcut): Sequential(
+            (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=64, bias=False)
+            (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): Conv2d(64, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (3): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (relu): ReLU(inplace=True)
+        )
+        (1): GELayerS1(
+          (conv1): ConvBNReLU(
+            (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (bn): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (relu): ReLU(inplace=True)
+          )
+          (dwconv): Sequential(
+            (0): Conv2d(128, 768, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+            (1): BatchNorm2d(768, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU(inplace=True)
+          )
+          (conv2): Sequential(
+            (0): Conv2d(768, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (relu): ReLU(inplace=True)
+        )
+        (2): GELayerS1(
+          (conv1): ConvBNReLU(
+            (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (bn): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (relu): ReLU(inplace=True)
+          )
+          (dwconv): Sequential(
+            (0): Conv2d(128, 768, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+            (1): BatchNorm2d(768, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU(inplace=True)
+          )
+          (conv2): Sequential(
+            (0): Conv2d(768, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (relu): ReLU(inplace=True)
+        )
+        (3): GELayerS1(
+          (conv1): ConvBNReLU(
+            (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+            (bn): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (relu): ReLU(inplace=True)
+          )
+          (dwconv): Sequential(
+            (0): Conv2d(128, 768, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+            (1): BatchNorm2d(768, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (2): ReLU(inplace=True)
+          )
+          (conv2): Sequential(
+            (0): Conv2d(768, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+            (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (relu): ReLU(inplace=True)
+        )
+      )
+      (S5_5): CEBlock(
+        (bn): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_gap): ConvBNReLU(
+          (conv): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (bn): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+        (conv_last): ConvBNReLU(
+          (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (bn): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+      )
+    )
+    (bga): BGALayer(
+      (left1): Sequential(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      )
+      (left2): Sequential(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): AvgPool2d(kernel_size=3, stride=2, padding=1)
+      )
+      (right1): Sequential(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (right2): Sequential(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      )
+      (up1): Upsample(scale_factor=4.0, mode=nearest)
+      (up2): Upsample(scale_factor=4.0, mode=nearest)
+      (conv): Sequential(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+    )
+    (binary_head): Binary_SegmentHead(
+      (conv): ConvBNReLU(
+        (conv): Conv2d(128, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+      (drop): Dropout(p=0.1, inplace=False)
+      (conv_out): Sequential(
+        (0): Identity()
+        (1): Conv2d(1024, 2, kernel_size=(1, 1), stride=(1, 1))
+        (2): Upsample(scale_factor=8.0, mode=bilinear)
+      )
+    )
+    (instance_head): Instance_SegmentHead(
+      (conv): ConvBNReLU(
+        (conv): Conv2d(128, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+      (drop): Dropout(p=0.1, inplace=False)
+      (conv_out): Sequential(
+        (0): Identity()
+        (1): Conv2d(1024, 128, kernel_size=(1, 1), stride=(1, 1))
+        (2): Upsample(scale_factor=8.0, mode=bilinear)
+      )
+    )
+  )
+  (backend): LaneNetBackEnd(
+    (seg_conv_bn): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (seg_conv_relu): ReLU()
+    (seg_conv): Conv2d(128, 4, kernel_size=(1, 1), stride=(1, 1))
+  )
+)
+CombinedModel(
+  (bisenet): Module(
+    (detail): Module(
+      (S1): Module(
+        (0): Module(
+          (conv): Conv2d(3, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+        )
+        (1): Module(
+          (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        )
+      )
+      (S2): Module(
+        (0): Module(
+          (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+        )
+        (1): Module(
+          (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        )
+        (2): Module(
+          (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        )
+      )
+      (S3): Module(
+        (0): Module(
+          (conv): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+        )
+        (1): Module(
+          (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        )
+        (2): Module(
+          (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        )
+      )
+    )
+    (segment): Module(
+      (S1S2): Module(
+        (conv): Module(
+          (conv): Conv2d(3, 16, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+        )
+        (left): Module(
+          (0): Module(
+            (conv): Conv2d(16, 8, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (1): Module(
+            (conv): Conv2d(8, 16, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+          )
+        )
+        (right): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+        (fuse): Module(
+          (conv): Conv2d(32, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        )
+      )
+      (S3): Module(
+        (0): Module(
+          (conv1): Module(
+            (conv): Conv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+          (dwconv1): Module(
+            (0): Conv2d(16, 96, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=16)
+          )
+          (dwconv2): Module(
+            (0): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96)
+          )
+          (conv2): Module(
+            (0): Conv2d(96, 32, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (shortcut): Module(
+            (0): Conv2d(16, 16, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=16)
+            (2): Conv2d(16, 32, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (1): Module(
+          (conv1): Module(
+            (conv): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+          (dwconv): Module(
+            (0): Conv2d(32, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32)
+          )
+          (conv2): Module(
+            (0): Conv2d(192, 32, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+      )
+      (S4): Module(
+        (0): Module(
+          (conv1): Module(
+            (conv): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+          (dwconv1): Module(
+            (0): Conv2d(32, 192, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=32)
+          )
+          (dwconv2): Module(
+            (0): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192)
+          )
+          (conv2): Module(
+            (0): Conv2d(192, 64, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (shortcut): Module(
+            (0): Conv2d(32, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=32)
+            (2): Conv2d(32, 64, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (1): Module(
+          (conv1): Module(
+            (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+          (dwconv): Module(
+            (0): Conv2d(64, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=64)
+          )
+          (conv2): Module(
+            (0): Conv2d(384, 64, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+      )
+      (S5_4): Module(
+        (0): Module(
+          (conv1): Module(
+            (conv): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+          (dwconv1): Module(
+            (0): Conv2d(64, 384, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=64)
+          )
+          (dwconv2): Module(
+            (0): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384)
+          )
+          (conv2): Module(
+            (0): Conv2d(384, 128, kernel_size=(1, 1), stride=(1, 1))
+          )
+          (shortcut): Module(
+            (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=64)
+            (2): Conv2d(64, 128, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (1): Module(
+          (conv1): Module(
+            (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+          (dwconv): Module(
+            (0): Conv2d(128, 768, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+          )
+          (conv2): Module(
+            (0): Conv2d(768, 128, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (2): Module(
+          (conv1): Module(
+            (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+          (dwconv): Module(
+            (0): Conv2d(128, 768, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+          )
+          (conv2): Module(
+            (0): Conv2d(768, 128, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+        (3): Module(
+          (conv1): Module(
+            (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          )
+          (dwconv): Module(
+            (0): Conv2d(128, 768, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+          )
+          (conv2): Module(
+            (0): Conv2d(768, 128, kernel_size=(1, 1), stride=(1, 1))
+          )
+        )
+      )
+      (S5_5): Module(
+        (bn): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv_gap): Module(
+          (conv): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1))
+        )
+        (conv_last): Module(
+          (conv): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+        )
+      )
+    )
+    (bga): Module(
+      (left1): Module(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+        (2): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      )
+      (left2): Module(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+        (2): AvgPool2d(kernel_size=3, stride=2, padding=1)
+      )
+      (right1): Module(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (right2): Module(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128)
+        (2): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      )
+      (up1): Upsample(scale_factor=4.0, mode=nearest)
+      (up2): Upsample(scale_factor=4.0, mode=nearest)
+      (conv): Module(
+        (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+    )
+    (binary_head): Module(
+      (conv): Module(
+        (conv): Conv2d(128, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (drop): Dropout(p=0.1, inplace=False)
+      (conv_out): Module(
+        (0): Identity()
+        (1): Conv2d(1024, 2, kernel_size=(1, 1), stride=(1, 1))
+        (2): Upsample(scale_factor=8.0, mode=bilinear)
+      )
+    )
+    (instance_head): Module(
+      (conv): Module(
+        (conv): Conv2d(128, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      )
+      (drop): Dropout(p=0.1, inplace=False)
+      (conv_out): Module(
+        (0): Identity()
+        (1): Conv2d(1024, 128, kernel_size=(1, 1), stride=(1, 1))
+        (2): Upsample(scale_factor=8.0, mode=bilinear)
+      )
+    )
+  )
+  (backend): Module(
+    (seg_conv_bn): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (seg_conv): Conv2d(128, 4, kernel_size=(1, 1), stride=(1, 1))
+  )
+  (snn tailor): Module(
+    (0): Module(
+      (0): VoltageScaler(0.333062)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.002444)
+    )
+    (1): Module(
+      (0): VoltageScaler(0.253183)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.949720)
+    )
+    (2): Module(
+      (0): VoltageScaler(0.230174)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.344543)
+    )
+    (3): Module(
+      (0): VoltageScaler(0.214967)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.651886)
+    )
+    (4): Module(
+      (0): VoltageScaler(0.210970)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.739999)
+    )
+    (5): Module(
+      (0): VoltageScaler(0.194381)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(5.144548)
+    )
+    (6): Module(
+      (0): VoltageScaler(0.181220)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(5.518157)
+    )
+    (7): Module(
+      (0): VoltageScaler(0.150341)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(6.651545)
+    )
+    (8): Module(
+      (0): VoltageScaler(0.310694)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.218597)
+    )
+    (9): Module(
+      (0): VoltageScaler(0.280841)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.560730)
+    )
+    (10): Module(
+      (0): VoltageScaler(0.248140)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.029977)
+    )
+    (11): Module(
+      (0): VoltageScaler(0.292162)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.422756)
+    )
+    (12): Module(
+      (0): VoltageScaler(0.264421)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.781848)
+    )
+    (13): Module(
+      (0): VoltageScaler(0.229880)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.350101)
+    )
+    (14): Module(
+      (0): VoltageScaler(0.252551)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.959592)
+    )
+    (15): Module(
+      (0): VoltageScaler(0.261320)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.826720)
+    )
+    (16): Module(
+      (0): VoltageScaler(0.214499)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.662028)
+    )
+    (17): Module(
+      (0): VoltageScaler(0.252435)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.961408)
+    )
+    (18): Module(
+      (0): VoltageScaler(0.265920)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.760525)
+    )
+    (19): Module(
+      (0): VoltageScaler(0.226572)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.413615)
+    )
+    (20): Module(
+      (0): VoltageScaler(0.276277)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.619561)
+    )
+    (21): Module(
+      (0): VoltageScaler(0.283320)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.529576)
+    )
+    (22): Module(
+      (0): VoltageScaler(0.223560)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.473075)
+    )
+    (23): Module(
+      (0): VoltageScaler(0.275577)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.628751)
+    )
+    (24): Module(
+      (0): VoltageScaler(0.273587)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.655140)
+    )
+    (25): Module(
+      (0): VoltageScaler(0.226938)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.406484)
+    )
+    (26): Module(
+      (0): VoltageScaler(0.262872)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.804137)
+    )
+    (27): Module(
+      (0): VoltageScaler(0.274719)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.640082)
+    )
+    (28): Module(
+      (0): VoltageScaler(0.217379)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.600259)
+    )
+    (29): Module(
+      (0): VoltageScaler(0.262450)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.810257)
+    )
+    (30): Module(
+      (0): VoltageScaler(0.275663)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.627618)
+    )
+    (31): Module(
+      (0): VoltageScaler(0.219859)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.548362)
+    )
+    (32): Module(
+      (0): VoltageScaler(0.262221)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.813576)
+    )
+    (33): Module(
+      (0): VoltageScaler(0.264326)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.783206)
+    )
+    (34): Module(
+      (0): VoltageScaler(0.213940)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.674211)
+    )
+    (35): Module(
+      (0): VoltageScaler(0.261717)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.820925)
+    )
+    (36): Module(
+      (0): VoltageScaler(0.301942)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.311889)
+    )
+    (37): Module(
+      (0): VoltageScaler(0.286608)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(3.489081)
+    )
+    (38): Module(
+      (0): VoltageScaler(0.118513)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(8.437879)
+    )
+    (39): Module(
+      (0): VoltageScaler(0.113493)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(8.811135)
+    )
+    (40): Module(
+      (0): VoltageScaler(0.140185)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(7.133412)
+    )
+    (41): Module(
+      (0): VoltageScaler(0.217078)
+      (1): IFNode(
+        v_threshold=1.0, v_reset=None, detach_reset=False, step_mode=s, backend=torch
+        (surrogate_function): Sigmoid(alpha=4.0, spiking=True)
+      )
+      (2): VoltageScaler(4.606646)
+    )
+  )
+)
+
+
+
+def forward(self, x):
+    bisenet_detail_s1_0_conv = getattr(self.bisenet.detail.S1, "0").conv(x)
+    snn_tailor_0_1 = getattr(getattr(getattr(self, "snn tailor"), "0"), "0")(bisenet_detail_s1_0_conv);  bisenet_detail_s1_0_conv = None
+    snn_tailor_0_2 = getattr(getattr(getattr(self, "snn tailor"), "0"), "1")(snn_tailor_0_1);  snn_tailor_0_1 = None
+    snn_tailor_0_3 = getattr(getattr(getattr(self, "snn tailor"), "0"), "2")(snn_tailor_0_2);  snn_tailor_0_2 = None
+    bisenet_detail_s1_1_conv = getattr(self.bisenet.detail.S1, "1").conv(snn_tailor_0_3);  snn_tailor_0_3 = None
+    snn_tailor_1_1 = getattr(getattr(getattr(self, "snn tailor"), "1"), "0")(bisenet_detail_s1_1_conv);  bisenet_detail_s1_1_conv = None
+    snn_tailor_1_2 = getattr(getattr(getattr(self, "snn tailor"), "1"), "1")(snn_tailor_1_1);  snn_tailor_1_1 = None
+    snn_tailor_1_3 = getattr(getattr(getattr(self, "snn tailor"), "1"), "2")(snn_tailor_1_2);  snn_tailor_1_2 = None
+    bisenet_detail_s2_0_conv = getattr(self.bisenet.detail.S2, "0").conv(snn_tailor_1_3);  snn_tailor_1_3 = None
+    snn_tailor_2_1 = getattr(getattr(getattr(self, "snn tailor"), "2"), "0")(bisenet_detail_s2_0_conv);  bisenet_detail_s2_0_conv = None
+    snn_tailor_2_2 = getattr(getattr(getattr(self, "snn tailor"), "2"), "1")(snn_tailor_2_1);  snn_tailor_2_1 = None
+    snn_tailor_2_3 = getattr(getattr(getattr(self, "snn tailor"), "2"), "2")(snn_tailor_2_2);  snn_tailor_2_2 = None
+    bisenet_detail_s2_1_conv = getattr(self.bisenet.detail.S2, "1").conv(snn_tailor_2_3);  snn_tailor_2_3 = None
+    snn_tailor_3_1 = getattr(getattr(getattr(self, "snn tailor"), "3"), "0")(bisenet_detail_s2_1_conv);  bisenet_detail_s2_1_conv = None
+    snn_tailor_3_2 = getattr(getattr(getattr(self, "snn tailor"), "3"), "1")(snn_tailor_3_1);  snn_tailor_3_1 = None
+    snn_tailor_3_3 = getattr(getattr(getattr(self, "snn tailor"), "3"), "2")(snn_tailor_3_2);  snn_tailor_3_2 = None
+    bisenet_detail_s2_2_conv = getattr(self.bisenet.detail.S2, "2").conv(snn_tailor_3_3);  snn_tailor_3_3 = None
+    snn_tailor_4_1 = getattr(getattr(getattr(self, "snn tailor"), "4"), "0")(bisenet_detail_s2_2_conv);  bisenet_detail_s2_2_conv = None
+    snn_tailor_4_2 = getattr(getattr(getattr(self, "snn tailor"), "4"), "1")(snn_tailor_4_1);  snn_tailor_4_1 = None
+    snn_tailor_4_3 = getattr(getattr(getattr(self, "snn tailor"), "4"), "2")(snn_tailor_4_2);  snn_tailor_4_2 = None
+    bisenet_detail_s3_0_conv = getattr(self.bisenet.detail.S3, "0").conv(snn_tailor_4_3);  snn_tailor_4_3 = None
+    snn_tailor_5_1 = getattr(getattr(getattr(self, "snn tailor"), "5"), "0")(bisenet_detail_s3_0_conv);  bisenet_detail_s3_0_conv = None
+    snn_tailor_5_2 = getattr(getattr(getattr(self, "snn tailor"), "5"), "1")(snn_tailor_5_1);  snn_tailor_5_1 = None
+    snn_tailor_5_3 = getattr(getattr(getattr(self, "snn tailor"), "5"), "2")(snn_tailor_5_2);  snn_tailor_5_2 = None
+    bisenet_detail_s3_1_conv = getattr(self.bisenet.detail.S3, "1").conv(snn_tailor_5_3);  snn_tailor_5_3 = None
+    snn_tailor_6_1 = getattr(getattr(getattr(self, "snn tailor"), "6"), "0")(bisenet_detail_s3_1_conv);  bisenet_detail_s3_1_conv = None
+    snn_tailor_6_2 = getattr(getattr(getattr(self, "snn tailor"), "6"), "1")(snn_tailor_6_1);  snn_tailor_6_1 = None
+    snn_tailor_6_3 = getattr(getattr(getattr(self, "snn tailor"), "6"), "2")(snn_tailor_6_2);  snn_tailor_6_2 = None
+    bisenet_detail_s3_2_conv = getattr(self.bisenet.detail.S3, "2").conv(snn_tailor_6_3);  snn_tailor_6_3 = None
+    snn_tailor_7_1 = getattr(getattr(getattr(self, "snn tailor"), "7"), "0")(bisenet_detail_s3_2_conv);  bisenet_detail_s3_2_conv = None
+    snn_tailor_7_2 = getattr(getattr(getattr(self, "snn tailor"), "7"), "1")(snn_tailor_7_1);  snn_tailor_7_1 = None
+    snn_tailor_7_3 = getattr(getattr(getattr(self, "snn tailor"), "7"), "2")(snn_tailor_7_2);  snn_tailor_7_2 = None
+    bisenet_segment_s1s2_conv_conv = self.bisenet.segment.S1S2.conv.conv(x);  x = None
+    snn_tailor_8_1 = getattr(getattr(getattr(self, "snn tailor"), "8"), "0")(bisenet_segment_s1s2_conv_conv);  bisenet_segment_s1s2_conv_conv = None
+    snn_tailor_8_2 = getattr(getattr(getattr(self, "snn tailor"), "8"), "1")(snn_tailor_8_1);  snn_tailor_8_1 = None
+    snn_tailor_8_3 = getattr(getattr(getattr(self, "snn tailor"), "8"), "2")(snn_tailor_8_2);  snn_tailor_8_2 = None
+    bisenet_segment_s1s2_left_0_conv = getattr(self.bisenet.segment.S1S2.left, "0").conv(snn_tailor_8_3)
+    snn_tailor_9_1 = getattr(getattr(getattr(self, "snn tailor"), "9"), "0")(bisenet_segment_s1s2_left_0_conv);  bisenet_segment_s1s2_left_0_conv = None
+    snn_tailor_9_2 = getattr(getattr(getattr(self, "snn tailor"), "9"), "1")(snn_tailor_9_1);  snn_tailor_9_1 = None
+    snn_tailor_9_3 = getattr(getattr(getattr(self, "snn tailor"), "9"), "2")(snn_tailor_9_2);  snn_tailor_9_2 = None
+    bisenet_segment_s1s2_left_1_conv = getattr(self.bisenet.segment.S1S2.left, "1").conv(snn_tailor_9_3);  snn_tailor_9_3 = None
+    snn_tailor_10_1 = getattr(getattr(getattr(self, "snn tailor"), "10"), "0")(bisenet_segment_s1s2_left_1_conv);  bisenet_segment_s1s2_left_1_conv = None
+    snn_tailor_10_2 = getattr(getattr(getattr(self, "snn tailor"), "10"), "1")(snn_tailor_10_1);  snn_tailor_10_1 = None
+    snn_tailor_10_3 = getattr(getattr(getattr(self, "snn tailor"), "10"), "2")(snn_tailor_10_2);  snn_tailor_10_2 = None
+    bisenet_segment_s1s2_right = self.bisenet.segment.S1S2.right(snn_tailor_8_3);  snn_tailor_8_3 = None
+    cat = torch.cat([snn_tailor_10_3, bisenet_segment_s1s2_right], dim = 1);  snn_tailor_10_3 = bisenet_segment_s1s2_right = None
+    bisenet_segment_s1s2_fuse_conv = self.bisenet.segment.S1S2.fuse.conv(cat);  cat = None
+    snn_tailor_11_1 = getattr(getattr(getattr(self, "snn tailor"), "11"), "0")(bisenet_segment_s1s2_fuse_conv);  bisenet_segment_s1s2_fuse_conv = None
+    snn_tailor_11_2 = getattr(getattr(getattr(self, "snn tailor"), "11"), "1")(snn_tailor_11_1);  snn_tailor_11_1 = None
+    snn_tailor_11_3 = getattr(getattr(getattr(self, "snn tailor"), "11"), "2")(snn_tailor_11_2);  snn_tailor_11_2 = None
+    bisenet_segment_s3_0_conv1_conv = getattr(self.bisenet.segment.S3, "0").conv1.conv(snn_tailor_11_3)
+    snn_tailor_12_1 = getattr(getattr(getattr(self, "snn tailor"), "12"), "0")(bisenet_segment_s3_0_conv1_conv);  bisenet_segment_s3_0_conv1_conv = None
+    snn_tailor_12_2 = getattr(getattr(getattr(self, "snn tailor"), "12"), "1")(snn_tailor_12_1);  snn_tailor_12_1 = None
+    snn_tailor_12_3 = getattr(getattr(getattr(self, "snn tailor"), "12"), "2")(snn_tailor_12_2);  snn_tailor_12_2 = None
+    bisenet_segment_s3_0_dwconv1_0 = getattr(getattr(self.bisenet.segment.S3, "0").dwconv1, "0")(snn_tailor_12_3);  snn_tailor_12_3 = None
+    bisenet_segment_s3_0_dwconv2_0 = getattr(getattr(self.bisenet.segment.S3, "0").dwconv2, "0")(bisenet_segment_s3_0_dwconv1_0);  bisenet_segment_s3_0_dwconv1_0 = None
+    snn_tailor_13_1 = getattr(getattr(getattr(self, "snn tailor"), "13"), "0")(bisenet_segment_s3_0_dwconv2_0);  bisenet_segment_s3_0_dwconv2_0 = None
+    snn_tailor_13_2 = getattr(getattr(getattr(self, "snn tailor"), "13"), "1")(snn_tailor_13_1);  snn_tailor_13_1 = None
+    snn_tailor_13_3 = getattr(getattr(getattr(self, "snn tailor"), "13"), "2")(snn_tailor_13_2);  snn_tailor_13_2 = None
+    bisenet_segment_s3_0_conv2_0 = getattr(getattr(self.bisenet.segment.S3, "0").conv2, "0")(snn_tailor_13_3);  snn_tailor_13_3 = None
+    bisenet_segment_s3_0_shortcut_0 = getattr(getattr(self.bisenet.segment.S3, "0").shortcut, "0")(snn_tailor_11_3);  snn_tailor_11_3 = None
+    bisenet_segment_s3_0_shortcut_2 = getattr(getattr(self.bisenet.segment.S3, "0").shortcut, "2")(bisenet_segment_s3_0_shortcut_0);  bisenet_segment_s3_0_shortcut_0 = None
+    add = bisenet_segment_s3_0_conv2_0 + bisenet_segment_s3_0_shortcut_2;  bisenet_segment_s3_0_conv2_0 = bisenet_segment_s3_0_shortcut_2 = None
+    snn_tailor_14_1 = getattr(getattr(getattr(self, "snn tailor"), "14"), "0")(add);  add = None
+    snn_tailor_14_2 = getattr(getattr(getattr(self, "snn tailor"), "14"), "1")(snn_tailor_14_1);  snn_tailor_14_1 = None
+    snn_tailor_14_3 = getattr(getattr(getattr(self, "snn tailor"), "14"), "2")(snn_tailor_14_2);  snn_tailor_14_2 = None
+    bisenet_segment_s3_1_conv1_conv = getattr(self.bisenet.segment.S3, "1").conv1.conv(snn_tailor_14_3)
+    snn_tailor_15_1 = getattr(getattr(getattr(self, "snn tailor"), "15"), "0")(bisenet_segment_s3_1_conv1_conv);  bisenet_segment_s3_1_conv1_conv = None
+    snn_tailor_15_2 = getattr(getattr(getattr(self, "snn tailor"), "15"), "1")(snn_tailor_15_1);  snn_tailor_15_1 = None
+    snn_tailor_15_3 = getattr(getattr(getattr(self, "snn tailor"), "15"), "2")(snn_tailor_15_2);  snn_tailor_15_2 = None
+    bisenet_segment_s3_1_dwconv_0 = getattr(getattr(self.bisenet.segment.S3, "1").dwconv, "0")(snn_tailor_15_3);  snn_tailor_15_3 = None
+    snn_tailor_16_1 = getattr(getattr(getattr(self, "snn tailor"), "16"), "0")(bisenet_segment_s3_1_dwconv_0);  bisenet_segment_s3_1_dwconv_0 = None
+    snn_tailor_16_2 = getattr(getattr(getattr(self, "snn tailor"), "16"), "1")(snn_tailor_16_1);  snn_tailor_16_1 = None
+    snn_tailor_16_3 = getattr(getattr(getattr(self, "snn tailor"), "16"), "2")(snn_tailor_16_2);  snn_tailor_16_2 = None
+    bisenet_segment_s3_1_conv2_0 = getattr(getattr(self.bisenet.segment.S3, "1").conv2, "0")(snn_tailor_16_3);  snn_tailor_16_3 = None
+    add_1 = bisenet_segment_s3_1_conv2_0 + snn_tailor_14_3;  bisenet_segment_s3_1_conv2_0 = snn_tailor_14_3 = None
+    snn_tailor_17_1 = getattr(getattr(getattr(self, "snn tailor"), "17"), "0")(add_1);  add_1 = None
+    snn_tailor_17_2 = getattr(getattr(getattr(self, "snn tailor"), "17"), "1")(snn_tailor_17_1);  snn_tailor_17_1 = None
+    snn_tailor_17_3 = getattr(getattr(getattr(self, "snn tailor"), "17"), "2")(snn_tailor_17_2);  snn_tailor_17_2 = None
+    bisenet_segment_s4_0_conv1_conv = getattr(self.bisenet.segment.S4, "0").conv1.conv(snn_tailor_17_3)
+    snn_tailor_18_1 = getattr(getattr(getattr(self, "snn tailor"), "18"), "0")(bisenet_segment_s4_0_conv1_conv);  bisenet_segment_s4_0_conv1_conv = None
+    snn_tailor_18_2 = getattr(getattr(getattr(self, "snn tailor"), "18"), "1")(snn_tailor_18_1);  snn_tailor_18_1 = None
+    snn_tailor_18_3 = getattr(getattr(getattr(self, "snn tailor"), "18"), "2")(snn_tailor_18_2);  snn_tailor_18_2 = None
+    bisenet_segment_s4_0_dwconv1_0 = getattr(getattr(self.bisenet.segment.S4, "0").dwconv1, "0")(snn_tailor_18_3);  snn_tailor_18_3 = None
+    bisenet_segment_s4_0_dwconv2_0 = getattr(getattr(self.bisenet.segment.S4, "0").dwconv2, "0")(bisenet_segment_s4_0_dwconv1_0);  bisenet_segment_s4_0_dwconv1_0 = None
+    snn_tailor_19_1 = getattr(getattr(getattr(self, "snn tailor"), "19"), "0")(bisenet_segment_s4_0_dwconv2_0);  bisenet_segment_s4_0_dwconv2_0 = None
+    snn_tailor_19_2 = getattr(getattr(getattr(self, "snn tailor"), "19"), "1")(snn_tailor_19_1);  snn_tailor_19_1 = None
+    snn_tailor_19_3 = getattr(getattr(getattr(self, "snn tailor"), "19"), "2")(snn_tailor_19_2);  snn_tailor_19_2 = None
+    bisenet_segment_s4_0_conv2_0 = getattr(getattr(self.bisenet.segment.S4, "0").conv2, "0")(snn_tailor_19_3);  snn_tailor_19_3 = None
+    bisenet_segment_s4_0_shortcut_0 = getattr(getattr(self.bisenet.segment.S4, "0").shortcut, "0")(snn_tailor_17_3);  snn_tailor_17_3 = None
+    bisenet_segment_s4_0_shortcut_2 = getattr(getattr(self.bisenet.segment.S4, "0").shortcut, "2")(bisenet_segment_s4_0_shortcut_0);  bisenet_segment_s4_0_shortcut_0 = None
+    add_2 = bisenet_segment_s4_0_conv2_0 + bisenet_segment_s4_0_shortcut_2;  bisenet_segment_s4_0_conv2_0 = bisenet_segment_s4_0_shortcut_2 = None
+    snn_tailor_20_1 = getattr(getattr(getattr(self, "snn tailor"), "20"), "0")(add_2);  add_2 = None
+    snn_tailor_20_2 = getattr(getattr(getattr(self, "snn tailor"), "20"), "1")(snn_tailor_20_1);  snn_tailor_20_1 = None
+    snn_tailor_20_3 = getattr(getattr(getattr(self, "snn tailor"), "20"), "2")(snn_tailor_20_2);  snn_tailor_20_2 = None
+    bisenet_segment_s4_1_conv1_conv = getattr(self.bisenet.segment.S4, "1").conv1.conv(snn_tailor_20_3)
+    snn_tailor_21_1 = getattr(getattr(getattr(self, "snn tailor"), "21"), "0")(bisenet_segment_s4_1_conv1_conv);  bisenet_segment_s4_1_conv1_conv = None
+    snn_tailor_21_2 = getattr(getattr(getattr(self, "snn tailor"), "21"), "1")(snn_tailor_21_1);  snn_tailor_21_1 = None
+    snn_tailor_21_3 = getattr(getattr(getattr(self, "snn tailor"), "21"), "2")(snn_tailor_21_2);  snn_tailor_21_2 = None
+    bisenet_segment_s4_1_dwconv_0 = getattr(getattr(self.bisenet.segment.S4, "1").dwconv, "0")(snn_tailor_21_3);  snn_tailor_21_3 = None
+    snn_tailor_22_1 = getattr(getattr(getattr(self, "snn tailor"), "22"), "0")(bisenet_segment_s4_1_dwconv_0);  bisenet_segment_s4_1_dwconv_0 = None
+    snn_tailor_22_2 = getattr(getattr(getattr(self, "snn tailor"), "22"), "1")(snn_tailor_22_1);  snn_tailor_22_1 = None
+    snn_tailor_22_3 = getattr(getattr(getattr(self, "snn tailor"), "22"), "2")(snn_tailor_22_2);  snn_tailor_22_2 = None
+    bisenet_segment_s4_1_conv2_0 = getattr(getattr(self.bisenet.segment.S4, "1").conv2, "0")(snn_tailor_22_3);  snn_tailor_22_3 = None
+    add_3 = bisenet_segment_s4_1_conv2_0 + snn_tailor_20_3;  bisenet_segment_s4_1_conv2_0 = snn_tailor_20_3 = None
+    snn_tailor_23_1 = getattr(getattr(getattr(self, "snn tailor"), "23"), "0")(add_3);  add_3 = None
+    snn_tailor_23_2 = getattr(getattr(getattr(self, "snn tailor"), "23"), "1")(snn_tailor_23_1);  snn_tailor_23_1 = None
+    snn_tailor_23_3 = getattr(getattr(getattr(self, "snn tailor"), "23"), "2")(snn_tailor_23_2);  snn_tailor_23_2 = None
+    bisenet_segment_s5_4_0_conv1_conv = getattr(self.bisenet.segment.S5_4, "0").conv1.conv(snn_tailor_23_3)
+    snn_tailor_24_1 = getattr(getattr(getattr(self, "snn tailor"), "24"), "0")(bisenet_segment_s5_4_0_conv1_conv);  bisenet_segment_s5_4_0_conv1_conv = None
+    snn_tailor_24_2 = getattr(getattr(getattr(self, "snn tailor"), "24"), "1")(snn_tailor_24_1);  snn_tailor_24_1 = None
+    snn_tailor_24_3 = getattr(getattr(getattr(self, "snn tailor"), "24"), "2")(snn_tailor_24_2);  snn_tailor_24_2 = None
+    bisenet_segment_s5_4_0_dwconv1_0 = getattr(getattr(self.bisenet.segment.S5_4, "0").dwconv1, "0")(snn_tailor_24_3);  snn_tailor_24_3 = None
+    bisenet_segment_s5_4_0_dwconv2_0 = getattr(getattr(self.bisenet.segment.S5_4, "0").dwconv2, "0")(bisenet_segment_s5_4_0_dwconv1_0);  bisenet_segment_s5_4_0_dwconv1_0 = None
+    snn_tailor_25_1 = getattr(getattr(getattr(self, "snn tailor"), "25"), "0")(bisenet_segment_s5_4_0_dwconv2_0);  bisenet_segment_s5_4_0_dwconv2_0 = None
+    snn_tailor_25_2 = getattr(getattr(getattr(self, "snn tailor"), "25"), "1")(snn_tailor_25_1);  snn_tailor_25_1 = None
+    snn_tailor_25_3 = getattr(getattr(getattr(self, "snn tailor"), "25"), "2")(snn_tailor_25_2);  snn_tailor_25_2 = None
+    bisenet_segment_s5_4_0_conv2_0 = getattr(getattr(self.bisenet.segment.S5_4, "0").conv2, "0")(snn_tailor_25_3);  snn_tailor_25_3 = None
+    bisenet_segment_s5_4_0_shortcut_0 = getattr(getattr(self.bisenet.segment.S5_4, "0").shortcut, "0")(snn_tailor_23_3);  snn_tailor_23_3 = None
+    bisenet_segment_s5_4_0_shortcut_2 = getattr(getattr(self.bisenet.segment.S5_4, "0").shortcut, "2")(bisenet_segment_s5_4_0_shortcut_0);  bisenet_segment_s5_4_0_shortcut_0 = None
+    add_4 = bisenet_segment_s5_4_0_conv2_0 + bisenet_segment_s5_4_0_shortcut_2;  bisenet_segment_s5_4_0_conv2_0 = bisenet_segment_s5_4_0_shortcut_2 = None
+    snn_tailor_26_1 = getattr(getattr(getattr(self, "snn tailor"), "26"), "0")(add_4);  add_4 = None
+    snn_tailor_26_2 = getattr(getattr(getattr(self, "snn tailor"), "26"), "1")(snn_tailor_26_1);  snn_tailor_26_1 = None
+    snn_tailor_26_3 = getattr(getattr(getattr(self, "snn tailor"), "26"), "2")(snn_tailor_26_2);  snn_tailor_26_2 = None
+    bisenet_segment_s5_4_1_conv1_conv = getattr(self.bisenet.segment.S5_4, "1").conv1.conv(snn_tailor_26_3)
+    snn_tailor_27_1 = getattr(getattr(getattr(self, "snn tailor"), "27"), "0")(bisenet_segment_s5_4_1_conv1_conv);  bisenet_segment_s5_4_1_conv1_conv = None
+    snn_tailor_27_2 = getattr(getattr(getattr(self, "snn tailor"), "27"), "1")(snn_tailor_27_1);  snn_tailor_27_1 = None
+    snn_tailor_27_3 = getattr(getattr(getattr(self, "snn tailor"), "27"), "2")(snn_tailor_27_2);  snn_tailor_27_2 = None
+    bisenet_segment_s5_4_1_dwconv_0 = getattr(getattr(self.bisenet.segment.S5_4, "1").dwconv, "0")(snn_tailor_27_3);  snn_tailor_27_3 = None
+    snn_tailor_28_1 = getattr(getattr(getattr(self, "snn tailor"), "28"), "0")(bisenet_segment_s5_4_1_dwconv_0);  bisenet_segment_s5_4_1_dwconv_0 = None
+    snn_tailor_28_2 = getattr(getattr(getattr(self, "snn tailor"), "28"), "1")(snn_tailor_28_1);  snn_tailor_28_1 = None
+    snn_tailor_28_3 = getattr(getattr(getattr(self, "snn tailor"), "28"), "2")(snn_tailor_28_2);  snn_tailor_28_2 = None
+    bisenet_segment_s5_4_1_conv2_0 = getattr(getattr(self.bisenet.segment.S5_4, "1").conv2, "0")(snn_tailor_28_3);  snn_tailor_28_3 = None
+    add_5 = bisenet_segment_s5_4_1_conv2_0 + snn_tailor_26_3;  bisenet_segment_s5_4_1_conv2_0 = snn_tailor_26_3 = None
+    snn_tailor_29_1 = getattr(getattr(getattr(self, "snn tailor"), "29"), "0")(add_5);  add_5 = None
+    snn_tailor_29_2 = getattr(getattr(getattr(self, "snn tailor"), "29"), "1")(snn_tailor_29_1);  snn_tailor_29_1 = None
+    snn_tailor_29_3 = getattr(getattr(getattr(self, "snn tailor"), "29"), "2")(snn_tailor_29_2);  snn_tailor_29_2 = None
+    bisenet_segment_s5_4_2_conv1_conv = getattr(self.bisenet.segment.S5_4, "2").conv1.conv(snn_tailor_29_3)
+    snn_tailor_30_1 = getattr(getattr(getattr(self, "snn tailor"), "30"), "0")(bisenet_segment_s5_4_2_conv1_conv);  bisenet_segment_s5_4_2_conv1_conv = None
+    snn_tailor_30_2 = getattr(getattr(getattr(self, "snn tailor"), "30"), "1")(snn_tailor_30_1);  snn_tailor_30_1 = None
+    snn_tailor_30_3 = getattr(getattr(getattr(self, "snn tailor"), "30"), "2")(snn_tailor_30_2);  snn_tailor_30_2 = None
+    bisenet_segment_s5_4_2_dwconv_0 = getattr(getattr(self.bisenet.segment.S5_4, "2").dwconv, "0")(snn_tailor_30_3);  snn_tailor_30_3 = None
+    snn_tailor_31_1 = getattr(getattr(getattr(self, "snn tailor"), "31"), "0")(bisenet_segment_s5_4_2_dwconv_0);  bisenet_segment_s5_4_2_dwconv_0 = None
+    snn_tailor_31_2 = getattr(getattr(getattr(self, "snn tailor"), "31"), "1")(snn_tailor_31_1);  snn_tailor_31_1 = None
+    snn_tailor_31_3 = getattr(getattr(getattr(self, "snn tailor"), "31"), "2")(snn_tailor_31_2);  snn_tailor_31_2 = None
+    bisenet_segment_s5_4_2_conv2_0 = getattr(getattr(self.bisenet.segment.S5_4, "2").conv2, "0")(snn_tailor_31_3);  snn_tailor_31_3 = None
+    add_6 = bisenet_segment_s5_4_2_conv2_0 + snn_tailor_29_3;  bisenet_segment_s5_4_2_conv2_0 = snn_tailor_29_3 = None
+    snn_tailor_32_1 = getattr(getattr(getattr(self, "snn tailor"), "32"), "0")(add_6);  add_6 = None
+    snn_tailor_32_2 = getattr(getattr(getattr(self, "snn tailor"), "32"), "1")(snn_tailor_32_1);  snn_tailor_32_1 = None
+    snn_tailor_32_3 = getattr(getattr(getattr(self, "snn tailor"), "32"), "2")(snn_tailor_32_2);  snn_tailor_32_2 = None
+    bisenet_segment_s5_4_3_conv1_conv = getattr(self.bisenet.segment.S5_4, "3").conv1.conv(snn_tailor_32_3)
+    snn_tailor_33_1 = getattr(getattr(getattr(self, "snn tailor"), "33"), "0")(bisenet_segment_s5_4_3_conv1_conv);  bisenet_segment_s5_4_3_conv1_conv = None
+    snn_tailor_33_2 = getattr(getattr(getattr(self, "snn tailor"), "33"), "1")(snn_tailor_33_1);  snn_tailor_33_1 = None
+    snn_tailor_33_3 = getattr(getattr(getattr(self, "snn tailor"), "33"), "2")(snn_tailor_33_2);  snn_tailor_33_2 = None
+    bisenet_segment_s5_4_3_dwconv_0 = getattr(getattr(self.bisenet.segment.S5_4, "3").dwconv, "0")(snn_tailor_33_3);  snn_tailor_33_3 = None
+    snn_tailor_34_1 = getattr(getattr(getattr(self, "snn tailor"), "34"), "0")(bisenet_segment_s5_4_3_dwconv_0);  bisenet_segment_s5_4_3_dwconv_0 = None
+    snn_tailor_34_2 = getattr(getattr(getattr(self, "snn tailor"), "34"), "1")(snn_tailor_34_1);  snn_tailor_34_1 = None
+    snn_tailor_34_3 = getattr(getattr(getattr(self, "snn tailor"), "34"), "2")(snn_tailor_34_2);  snn_tailor_34_2 = None
+    bisenet_segment_s5_4_3_conv2_0 = getattr(getattr(self.bisenet.segment.S5_4, "3").conv2, "0")(snn_tailor_34_3);  snn_tailor_34_3 = None
+    add_7 = bisenet_segment_s5_4_3_conv2_0 + snn_tailor_32_3;  bisenet_segment_s5_4_3_conv2_0 = snn_tailor_32_3 = None
+    snn_tailor_35_1 = getattr(getattr(getattr(self, "snn tailor"), "35"), "0")(add_7);  add_7 = None
+    snn_tailor_35_2 = getattr(getattr(getattr(self, "snn tailor"), "35"), "1")(snn_tailor_35_1);  snn_tailor_35_1 = None
+    snn_tailor_35_3 = getattr(getattr(getattr(self, "snn tailor"), "35"), "2")(snn_tailor_35_2);  snn_tailor_35_2 = None
+    mean = torch.mean(snn_tailor_35_3, dim = (2, 3), keepdim = True)
+    bisenet_segment_s5_5_bn = self.bisenet.segment.S5_5.bn(mean);  mean = None
+    bisenet_segment_s5_5_conv_gap_conv = self.bisenet.segment.S5_5.conv_gap.conv(bisenet_segment_s5_5_bn);  bisenet_segment_s5_5_bn = None
+    snn_tailor_36_1 = getattr(getattr(getattr(self, "snn tailor"), "36"), "0")(bisenet_segment_s5_5_conv_gap_conv);  bisenet_segment_s5_5_conv_gap_conv = None
+    snn_tailor_36_2 = getattr(getattr(getattr(self, "snn tailor"), "36"), "1")(snn_tailor_36_1);  snn_tailor_36_1 = None
+    snn_tailor_36_3 = getattr(getattr(getattr(self, "snn tailor"), "36"), "2")(snn_tailor_36_2);  snn_tailor_36_2 = None
+    add_8 = snn_tailor_36_3 + snn_tailor_35_3;  snn_tailor_36_3 = snn_tailor_35_3 = None
+    bisenet_segment_s5_5_conv_last_conv = self.bisenet.segment.S5_5.conv_last.conv(add_8);  add_8 = None
+    snn_tailor_37_1 = getattr(getattr(getattr(self, "snn tailor"), "37"), "0")(bisenet_segment_s5_5_conv_last_conv);  bisenet_segment_s5_5_conv_last_conv = None
+    snn_tailor_37_2 = getattr(getattr(getattr(self, "snn tailor"), "37"), "1")(snn_tailor_37_1);  snn_tailor_37_1 = None
+    snn_tailor_37_3 = getattr(getattr(getattr(self, "snn tailor"), "37"), "2")(snn_tailor_37_2);  snn_tailor_37_2 = None
+    size = snn_tailor_7_3.size()
+    getitem = size[slice(2, None, None)];  size = None
+    bisenet_bga_left1_0 = getattr(self.bisenet.bga.left1, "0")(snn_tailor_7_3)
+    bisenet_bga_left1_2 = getattr(self.bisenet.bga.left1, "2")(bisenet_bga_left1_0);  bisenet_bga_left1_0 = None
+    bisenet_bga_left2_0 = getattr(self.bisenet.bga.left2, "0")(snn_tailor_7_3);  snn_tailor_7_3 = None
+    bisenet_bga_left2_2 = getattr(self.bisenet.bga.left2, "2")(bisenet_bga_left2_0);  bisenet_bga_left2_0 = None
+    bisenet_bga_right1_0 = getattr(self.bisenet.bga.right1, "0")(snn_tailor_37_3)
+    bisenet_bga_right2_0 = getattr(self.bisenet.bga.right2, "0")(snn_tailor_37_3);  snn_tailor_37_3 = None
+    bisenet_bga_right2_2 = getattr(self.bisenet.bga.right2, "2")(bisenet_bga_right2_0);  bisenet_bga_right2_0 = None
+    bisenet_bga_up1 = self.bisenet.bga.up1(bisenet_bga_right1_0);  bisenet_bga_right1_0 = None
+    sigmoid = torch.sigmoid(bisenet_bga_up1);  bisenet_bga_up1 = None
+    mul = bisenet_bga_left1_2 * sigmoid;  bisenet_bga_left1_2 = sigmoid = None
+    sigmoid_1 = torch.sigmoid(bisenet_bga_right2_2);  bisenet_bga_right2_2 = None
+    mul_1 = bisenet_bga_left2_2 * sigmoid_1;  bisenet_bga_left2_2 = sigmoid_1 = None
+    bisenet_bga_up2 = self.bisenet.bga.up2(mul_1);  mul_1 = None
+    add_9 = mul + bisenet_bga_up2;  mul = bisenet_bga_up2 = None
+    bisenet_bga_conv_0 = getattr(self.bisenet.bga.conv, "0")(add_9);  add_9 = None
+    snn_tailor_38_1 = getattr(getattr(getattr(self, "snn tailor"), "38"), "0")(bisenet_bga_conv_0);  bisenet_bga_conv_0 = None
+    snn_tailor_38_2 = getattr(getattr(getattr(self, "snn tailor"), "38"), "1")(snn_tailor_38_1);  snn_tailor_38_1 = None
+    snn_tailor_38_3 = getattr(getattr(getattr(self, "snn tailor"), "38"), "2")(snn_tailor_38_2);  snn_tailor_38_2 = None
+    bisenet_binary_head_conv_conv = self.bisenet.binary_head.conv.conv(snn_tailor_38_3)
+    snn_tailor_39_1 = getattr(getattr(getattr(self, "snn tailor"), "39"), "0")(bisenet_binary_head_conv_conv);  bisenet_binary_head_conv_conv = None
+    snn_tailor_39_2 = getattr(getattr(getattr(self, "snn tailor"), "39"), "1")(snn_tailor_39_1);  snn_tailor_39_1 = None
+    snn_tailor_39_3 = getattr(getattr(getattr(self, "snn tailor"), "39"), "2")(snn_tailor_39_2);  snn_tailor_39_2 = None
+    bisenet_binary_head_drop = self.bisenet.binary_head.drop(snn_tailor_39_3);  snn_tailor_39_3 = None
+    bisenet_binary_head_conv_out_0 = getattr(self.bisenet.binary_head.conv_out, "0")(bisenet_binary_head_drop);  bisenet_binary_head_drop = None
+    bisenet_binary_head_conv_out_1 = getattr(self.bisenet.binary_head.conv_out, "1")(bisenet_binary_head_conv_out_0);  bisenet_binary_head_conv_out_0 = None
+    bisenet_binary_head_conv_out_2 = getattr(self.bisenet.binary_head.conv_out, "2")(bisenet_binary_head_conv_out_1);  bisenet_binary_head_conv_out_1 = None
+    bisenet_instance_head_conv_conv = self.bisenet.instance_head.conv.conv(snn_tailor_38_3);  snn_tailor_38_3 = None
+    snn_tailor_40_1 = getattr(getattr(getattr(self, "snn tailor"), "40"), "0")(bisenet_instance_head_conv_conv);  bisenet_instance_head_conv_conv = None
+    snn_tailor_40_2 = getattr(getattr(getattr(self, "snn tailor"), "40"), "1")(snn_tailor_40_1);  snn_tailor_40_1 = None
+    snn_tailor_40_3 = getattr(getattr(getattr(self, "snn tailor"), "40"), "2")(snn_tailor_40_2);  snn_tailor_40_2 = None
+    bisenet_instance_head_drop = self.bisenet.instance_head.drop(snn_tailor_40_3);  snn_tailor_40_3 = None
+    bisenet_instance_head_conv_out_0 = getattr(self.bisenet.instance_head.conv_out, "0")(bisenet_instance_head_drop);  bisenet_instance_head_drop = None
+    bisenet_instance_head_conv_out_1 = getattr(self.bisenet.instance_head.conv_out, "1")(bisenet_instance_head_conv_out_0);  bisenet_instance_head_conv_out_0 = None
+    bisenet_instance_head_conv_out_2 = getattr(self.bisenet.instance_head.conv_out, "2")(bisenet_instance_head_conv_out_1);  bisenet_instance_head_conv_out_1 = None
+    softmax = torch.nn.functional.softmax(bisenet_binary_head_conv_out_2, dim = 1, _stacklevel = 3, dtype = None)
+    argmax = torch.argmax(softmax, dim = 1);  softmax = None
+    backend_seg_conv_bn = self.backend.seg_conv_bn(bisenet_instance_head_conv_out_2)
+    snn_tailor_41_1 = getattr(getattr(getattr(self, "snn tailor"), "41"), "0")(backend_seg_conv_bn);  backend_seg_conv_bn = None
+    snn_tailor_41_2 = getattr(getattr(getattr(self, "snn tailor"), "41"), "1")(snn_tailor_41_1);  snn_tailor_41_1 = None
+    snn_tailor_41_3 = getattr(getattr(getattr(self, "snn tailor"), "41"), "2")(snn_tailor_41_2);  snn_tailor_41_2 = None
+    backend_seg_conv = self.backend.seg_conv(snn_tailor_41_3);  snn_tailor_41_3 = None
+    return (bisenet_binary_head_conv_out_2, bisenet_instance_head_conv_out_2, argmax, backend_seg_conv)
+    
+image_vis = (960, 544, 3),<class 'numpy.ndarray'>
+binary_seg_prediction = (960, 544) instance_seg_prediction = (1, 960, 544, 4)
+image_vis = (960, 544, 3),embedding_image =  <class 'numpy.ndarray'>
