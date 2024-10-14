@@ -5,8 +5,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import time
-from .model_utils import BasicBlock, Bottleneck, segmenthead, DAPPM, PAPPM, PagFM, Bag, Light_Bag
+from .model_utils import BasicBlock, Bottleneck, segmenthead, DAPPM, PAPPM, PagFM, Bag, Light_Bag,binary_segmenthead,instance_segmenthead
 import logging
+import numpy as np
 
 BatchNorm2d = nn.BatchNorm2d
 bn_mom = 0.1
@@ -85,9 +86,8 @@ class PIDNet(nn.Module):
         if self.augment:
             self.seghead_p = segmenthead(planes * 2, head_planes, num_classes)
             self.seghead_d = segmenthead(planes * 2, planes, num_classes)           
-        self.binary_final_layer = segmenthead(planes * 4, head_planes, num_classes,scale_factor = 8)
-        self.seg_final_layer = segmenthead(planes * 4, head_planes, embedding_dims,scale_factor = 8)
-
+        self.binary_final_layer = binary_segmenthead(planes * 4, head_planes, num_classes,scale_factor = 8)
+        self.seg_final_layer = instance_segmenthead(planes * 4, head_planes, embedding_dims,scale_factor = 8)
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
@@ -168,15 +168,25 @@ class PIDNet(nn.Module):
                         size=[height_output, width_output],
                         mode='bilinear', align_corners=algc)
 
-        binary_logits = self.binary_final_layer(self.dfm(x_, x, x_d))
+        binary_logits,con0 = self.binary_final_layer(self.dfm(x_, x, x_d))
+        # print(f"aux_binary = {aux_binary.shape}")
         seg_logits = self.seg_final_layer(self.dfm(x_, x, x_d))
 
         if self.augment: 
             # x_extra_p = self.seghead_p(temp_p)
             x_extra_d = self.seghead_d(temp_d)
-            return [binary_logits,seg_logits,x_extra_d]
+            return {
+                'binary_logits': binary_logits,
+                'seg_logits': seg_logits,
+                'x_extra_d': x_extra_d,
+                'con0': con0,
+            }
         else:
-            return [binary_logits,seg_logits]     
+            return {
+                'binary_logits': binary_logits,
+                'seg_logits': seg_logits,
+                'con0': con0,
+            }
 
 def get_seg_model(cfg, imgnet_pretrained):
     
@@ -303,55 +313,63 @@ class PostprocessNet_V2(nn.Module):
         return x
 
 class PostprocessNet_V3(nn.Module):
-    def __init__(self,height,width,d_model,max,device):
+    def __init__(self,height,width,d_model,max,device,mode):
         super(PostprocessNet_V3, self).__init__()
         # 输入 [1, 4, 960, 544]
+        self.device = device
+        self.mode = mode
         self.height, self.width, self.d_model,self.max = height,width,d_model,max
-        self.position_enc = create_horizontal_position_encoding(self.height, self.width, self.d_model).to(device)
+        ## 位置参数可以被训练
+        self.position_enc = nn.Parameter(create_horizontal_position_encoding(self.height, self.width, self.d_model).to(device), requires_grad=True)
         # 卷积层1 + 批归一化层 + ReLU激活函数 + 池化层
-        self.conv1 = nn.Conv2d(in_channels=4, out_channels=16, kernel_size=3, stride=2, padding=1)  # [1, 16, 480, 272]
-        self.bn1 = nn.BatchNorm2d(16)  # 批归一化层
+        self.conv1 = nn.Conv2d(in_channels=4, out_channels=48, kernel_size=3, stride=2, padding=1)  # [1, 32, h, w]
+        self.bn1 = nn.BatchNorm2d(48)  # 批归一化层
         self.relu1 = nn.ReLU()  # ReLU激活函数
-        self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)  # [1, 16, 240, 136]
         
         # 卷积层2 + 批归一化层 + ReLU激活函数 + 池化层
-        self.conv2 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, stride=1, padding=1)  # [1, 32, 240, 136]
+        self.conv2 = nn.Conv2d(in_channels=48, out_channels=32, kernel_size=3, stride=2, padding=1)  # [1, max_class, h/8, w/8]
         self.bn2 = nn.BatchNorm2d(32)  # 批归一化层
         self.relu2 = nn.ReLU()  # ReLU激活函数
-        self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)  # [1, 32, 120, 68]
 
-        # 卷积层3 + 批归一化层 + ReLU激活函数
-        self.conv3 = nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=1, padding=1)  # [1, 16, 120, 68]
+        # # 卷积层3 + 批归一化层 + ReLU激活函数
+        self.conv3 = nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2, padding=1)  # [1, 16, 120, 68]
         self.bn3 = nn.BatchNorm2d(16)  # 批归一化层
         self.relu3 = nn.ReLU()  # ReLU激活函数
 
-        # 卷积层4，输出的通道数改为4
+        # # 卷积层4，输出的通道数改为4
         self.conv4 = nn.Conv2d(in_channels=16, out_channels=self.max, kernel_size=3, stride=1, padding=1)  # [1, 4, 120, 68]
+        self.bn4 = nn.BatchNorm2d(self.max)  # 批归一化层
+        self.relu4 = nn.ReLU()  # ReLU激活函数
 
     def forward(self, x):
+        #x = torch.cat((x, self.position_enc[0].unsqueeze(0)), dim=1)
+        # if(self.mode == "eval"):
+        #     self.eval_position_enc = F.interpolate(self.position_enc.unsqueeze(0), size=(480, 480), mode='bilinear', align_corners=False).to(self.device)
+        #     x = x + self.eval_position_enc
+        # else:
         x = x + self.position_enc
         x = self.conv1(x)
-        x = self.bn1(x)  # 批归一化层
+        y = x
+        x = self.bn1(x)    # 批归一化层
         x = self.relu1(x)  # 激活函数
-        x = self.pool1(x)
         
         x = self.conv2(x)
-        x = self.bn2(x)  # 批归一化层
+        x = self.bn2(x)    # 批归一化层
         x = self.relu2(x)  # 激活函数
-        x = self.pool2(x)
         
         x = self.conv3(x)
         x = self.bn3(x)  # 批归一化层
         x = self.relu3(x)  # 激活函数
-        
+
         x = self.conv4(x)
-        return x
+        x = self.bn4(x)  # 批归一化层
+        x = self.relu4(x)  # 激活函数        
+        return x,y
 
 
 
 if __name__ == '__main__':
     
-
     # 示例用法
     activation = SmoothStepFunction(4)
     input_tensor = torch.tensor([-2.0,-1.0, 0.3, 0.7, 1.2, 1.8, 2.5, 3.0, 3.7,4.5,7], requires_grad=True)

@@ -12,7 +12,7 @@ import random
 import re
 
 def extract_frame_number(filepath):
-    match = re.search(r'frame_\d+', filepath)
+    match = re.search(r'\d+', filepath)
     if match:
         return match.group()
     return None
@@ -51,21 +51,27 @@ def random_crop_three_images(img1, img2, img3,img4, crop_size):
 class My_Data(Dataset):
     def __init__(self, txt_path, mode='train', model = "bisenet"):
         self.mode = mode
-        self.crop_size = [640,384]
         if mode == 'train':
             self.transform1 = transforms.Compose([
+                transforms.Resize((256, 256)),
                 transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  
             ])
+            self.transform2 = transforms.Compose([
+                transforms.Resize((256, 256),interpolation=transforms.InterpolationMode.NEAREST),
+                transforms.ToTensor(),
+            ])
         else:
             self.transform1 = transforms.Compose([
+                transforms.Resize((256, 256)),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  
             ])
-        self.transform2 = transforms.Compose([
-            transforms.ToTensor(),
-        ])
+            self.transform2 = transforms.Compose([
+                transforms.Resize((256, 256),interpolation=transforms.InterpolationMode.NEAREST),
+                transforms.ToTensor(),
+            ])
         self.data_list = []
         self.num_classes = 2
         self.model = model
@@ -73,19 +79,23 @@ class My_Data(Dataset):
         with open(txt_path, 'r') as f:
             lines = f.readlines()
             for line in lines:
-                img_path, binary_seg_path, instance_seg_path,border_seg_path = line.strip().split()
-                self.data_list.append((img_path, binary_seg_path, instance_seg_path,border_seg_path))
+                img_path, binary_seg_path, instance_seg_path,border_seg_path,label_path,con0_path,con1_path,con2_path = line.strip().split()
+                self.data_list.append((img_path, binary_seg_path, instance_seg_path,border_seg_path,label_path,con0_path,con1_path,con2_path))
 
     def __len__(self):
         return len(self.data_list)
 
     def __getitem__(self, idx):
-        img_path, binary_seg_path, instance_seg_path,border_seg_path = self.data_list[idx]
+        img_path, binary_seg_path, instance_seg_path,border_seg_path,label_path,con0_path,con1_path,con2_path = self.data_list[idx]
         # print(img_path)
         image = Image.open(img_path)
         binary_seg = Image.open(binary_seg_path)
         instance_seg = Image.open(instance_seg_path)
         border_seg = Image.open(border_seg_path)
+        label_seg =  Image.open(label_path)
+        con0 = Image.open(con0_path)
+        con1 = Image.open(con1_path)
+        con2 = Image.open(con2_path)
 
         # random crop for train
         # if(self.mode == "train"):
@@ -94,12 +104,20 @@ class My_Data(Dataset):
         image = self.transform1(image)
         binary_seg = self.transform2(binary_seg)
         instance_seg = self.transform2(instance_seg)
+        label_seg = self.transform2(label_seg)
         border_seg = self.transform2(border_seg)
-        
-        instance_seg = instance_seg.permute(1,2,0)
 
+        con0 = self.transform2(con0)
+        con1 = self.transform2(con1)
+        con2 = self.transform2(con2)
+
+        connect_label = torch.cat((con0, con1, con2), 0)
+
+        instance_seg = instance_seg.permute(1,2,0)
         instance_seg = instance_seg.squeeze(-1)
 
+        label_seg = label_seg.permute(1,2,0)
+        label_seg = label_seg.squeeze(-1)
 
         # print(f"binary_seg = {binary_seg.shape}")
         # print(f"instance_seg = {instance_seg.shape}")
@@ -123,7 +141,9 @@ class My_Data(Dataset):
         # cv2.imwrite('image.png', image_bgr)
 
         unique_labels, counts = torch.unique(binary_seg, return_counts=True)
+        # print(f"unique_labels = {unique_labels}")
         inverse_weights = 1.0 / torch.log(counts.float() / torch.sum(counts).float() + 1.02)
+        # print(f"inverse_weights = {inverse_weights.shape}")
         inverse_weights = torch.cat((inverse_weights.unsqueeze(0), torch.zeros(1, self.num_classes - len(counts))), dim=1)
 
         #binary hot
@@ -137,20 +157,16 @@ class My_Data(Dataset):
         border_onehot = F.one_hot(binary_indices, num_classes=self.num_classes)
         border_onehot = border_onehot.permute(0,3,1,2).squeeze()
 
-        if self.mode == 'train' and self.model == "bisenet":
-            return image, binary_label_onehot, instance_seg, inverse_weights
-        elif self.mode == 'train' and self.model == "pidnet":
-            return image, binary_label_onehot, instance_seg, border_onehot,inverse_weights
-        else:
-            return image, binary_label_onehot, instance_seg, inverse_weights,img_path,binary_seg_path
+        result = {
+        "image": image,
+        "binary_label_onehot": binary_label_onehot,
+        "instance_seg": instance_seg,
+        "label_seg": label_seg,
+        "inverse_weights": inverse_weights,
+        "border_onehot": border_onehot,
+        "img_path": img_path,
+        "binary_seg_path": binary_seg_path,
+        "connect_label": connect_label
+        }
 
-# 绀轰緥鐢ㄦ硶
-dataset_dir = '/home/suepr20/luofan/my_lanedetection/mytraining_data_example'
-
-# train_data = My_Data(txt_path=os.path.join(dataset_dir, "train.txt"), mode='train')
-# test_data = My_Data(txt_path=os.path.join(dataset_dir, "test.txt"), mode='test')
-
-# print(f"train_data = {len(train_data)}")
-# print(f"test_data = {len(test_data)}")
-# image, binary_seg, instance_seg = train_data[0]
-# print(f"train_data = {image.shape},train_data = {binary_seg.shape},train_data = {instance_seg.shape}")
+        return result

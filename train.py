@@ -48,30 +48,26 @@ class Pidnet_Model(nn.Module):
         super(Pidnet_Model, self).__init__()
         self.pidnet = pidnet.get_pred_model(name='pidnet_s', embedding_dims=embedding_dims, num_classes=n_classes,augment = True)
     def forward(self, x):
-        binary_seg_logits, instance_seg_logits,x_extra_d = self.pidnet(x)
+        result = self.pidnet(x)
+        binary_seg_logits = result['binary_logits']
+        instance_seg_logits = result['seg_logits']
+        x_extra_d = result['x_extra_d']
+        con0 = result['con0']
 
         #实例输出
         instance_seg_prediction = instance_seg_logits
         #二值化输出
         #input shape
         binary_score = F.softmax(binary_seg_logits, dim=1)
-
-        # get lanes
-        # binary_mask = binary_score[:,1].unsqueeze(1)
-
-        # expand
-        # print(f"binary_mask = {binary_mask.shape}")
-        # binary_mask = binary_mask.expand(bs,embeding,h,w)  
-        # print(f"binary_mask = {binary_mask.shape}")
-        # fuse
-        # features = binary_mask * instance_seg_logits
-        # print(f"features = {features.shape}")
-        # # get correct pixels
-        # pixelcls = self.PostprocessNet(features)
-        # print(f"pixelcls = {pixelcls.shape}")
-
         binary_seg_prediction = torch.argmax(binary_score, dim=1)
-        return binary_seg_logits,instance_seg_logits,binary_seg_prediction,instance_seg_prediction,x_extra_d
+        return {
+                'binary_logits': binary_seg_logits,
+                'binary_pred':binary_seg_prediction,
+                'seg_logits': instance_seg_logits,
+                'seg_pred': instance_seg_prediction,
+                'x_extra_d': x_extra_d,
+                'con0': con0,
+            }
 
 def train(args):
     weight_dir = './weight/'
@@ -136,7 +132,13 @@ def train(args):
             if(args.model == "bisenet"):
                 binary_seg_logits,instance_seg_logits,binary_seg_prediction,instance_seg_prediction = model(images)
             elif(args.model == "pidnet"):
-                binary_seg_logits,instance_seg_logits,binary_seg_prediction,instance_seg_prediction,x_extra_d = model(images)
+                result = model(images)
+                binary_seg_logits = result['binary_logits']
+                binary_seg_prediction = result['binary_pred']
+                instance_seg_logits = result['seg_logits']
+                instance_seg_prediction = result['seg_pred']
+                x_extra_d = result['x_extra_d']
+                con0 = result['con0']
                 border_loss = loss.compute_border_loss(binary_label,x_extra_d,weights = inverse_weights)
             binary_loss = loss.compute_binary_loss(binary_label,binary_seg_logits,weights = inverse_weights)
             n_clusters = []

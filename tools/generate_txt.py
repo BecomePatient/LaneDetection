@@ -23,8 +23,9 @@ random.shuffle(image_files)
 
 # 划分训练集和测试集
 train_files = image_files[:num_train]
+print(f"train_files ={train_files}")
 test_files = image_files[num_train:]
-
+print(f"test_files ={test_files}")
 # 创建.txt文件并写入训练集和测试集的图片信息
 with open(train_txt_path, 'w') as f_train, open(test_txt_path, 'w') as f_test:
     for image_file in train_files:

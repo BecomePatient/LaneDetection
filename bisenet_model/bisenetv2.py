@@ -5,6 +5,9 @@ import torch.nn.functional as F
 import torch.utils.model_zoo as modelzoo
 from spikingjelly.activation_based import neuron, functional, surrogate, layer,learning
 from thop import profile,clever_format
+BatchNorm2d = nn.BatchNorm2d
+bn_mom = 0.1
+algc = False
 
 backbone_url = 'https://github.com/CoinCheung/BiSeNet/releases/download/0.0.0/backbone_v2.pth'
 
@@ -655,32 +658,91 @@ class Binary_SegmentHead(nn.Module):
         feat = self.conv_out(feat)
         return feat
 
-
-class Binary_SegmentHead(nn.Module):
-
-    def __init__(self, in_chan, mid_chan, n_classes, up_factor=8, aux=True):
-        super(Binary_SegmentHead, self).__init__()
-        self.conv = ConvBNReLU(in_chan, mid_chan, 3, stride=1)
-        self.drop = nn.Dropout(0.1)
-        self.up_factor = up_factor
-
-        out_chan = n_classes
-        mid_chan2 = up_factor * up_factor if aux else mid_chan
-        up_factor = up_factor // 2 if aux else up_factor
-        self.conv_out = nn.Sequential(
-            nn.Sequential(
-                nn.Upsample(scale_factor=2),
-                ConvBNReLU(mid_chan, mid_chan2, 3, stride=1)
-                ) if aux else nn.Identity(),
-            nn.Conv2d(mid_chan2, out_chan, 1, 1, 0, bias=True),
-            nn.Upsample(scale_factor=up_factor, mode='bilinear', align_corners=False)
+class SELayer(nn.Module):
+    def __init__(self, channel, reduction=3):
+        super(SELayer, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(channel, channel // reduction, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(channel // reduction, channel, bias=False),
+            nn.Sigmoid()
         )
+        self.out =  nn.Sigmoid()
 
     def forward(self, x):
-        feat = self.conv(x)
-        feat = self.drop(feat)
-        feat = self.conv_out(feat)
-        return feat
+        b, c, _, _ = x.size()
+        y = self.avg_pool(x).view(b, c)
+        y = self.fc(y).view(b, c, 1, 1)
+        out = self.out(x * y.expand_as(x))
+        return out
+
+class binary_segmenthead(nn.Module):
+    def __init__(self, inplanes, interplanes, outplanes, scale_factor=None,num_neighbor = 9):
+        super(binary_segmenthead, self).__init__()
+
+        self.seg_branch = nn.Sequential(BatchNorm2d(inplanes, momentum=bn_mom),
+                                nn.ReLU(inplace=True),
+                                nn.Conv2d(inplanes, interplanes, kernel_size=3, padding=1, bias=False),
+                                BatchNorm2d(interplanes, momentum=bn_mom),
+                                nn.ReLU(inplace=True),
+                                nn.Conv2d(interplanes, outplanes, kernel_size=1, padding=0, bias=True),
+                                nn.Sigmoid(),
+                                )
+        
+        self.scale_factor = scale_factor
+        # connect branch
+        self.connect_branch = nn.Sequential(nn.Conv2d(inplanes, interplanes, 3, stride=1, padding=1),
+                                nn.ReLU(),
+                                nn.Conv2d(interplanes, num_neighbor, 3, padding=1, dilation=1),
+                                    )
+        self.se = SELayer(num_neighbor)
+                                    
+
+    def forward(self, x):
+        binary_seg = self.seg_branch(x)
+        if self.scale_factor is not None:
+            height = binary_seg.shape[-2] * self.scale_factor
+            width = binary_seg.shape[-1] * self.scale_factor
+            binary_seg = F.interpolate(binary_seg,
+                        size=[height, width],
+                        mode='bilinear', align_corners=algc)
+        # print(f"out = {out.shape}")
+        connet_branch = self.connect_branch(x)
+        connet0 = self.se(connet_branch)
+        if self.scale_factor is not None:
+            height = connet0.shape[-2] * self.scale_factor
+            width = connet0.shape[-1] * self.scale_factor
+            connet0 = F.interpolate(connet0,
+                        size=[height, width],
+                        mode='bilinear', align_corners=algc)
+        return binary_seg,connet0
+
+# class Binary_SegmentHead(nn.Module):
+
+#     def __init__(self, in_chan, mid_chan, n_classes, up_factor=8, aux=True):
+#         super(Binary_SegmentHead, self).__init__()
+#         self.conv = ConvBNReLU(in_chan, mid_chan, 3, stride=1)
+#         self.drop = nn.Dropout(0.1)
+#         self.up_factor = up_factor
+
+#         out_chan = n_classes
+#         mid_chan2 = up_factor * up_factor if aux else mid_chan
+#         up_factor = up_factor // 2 if aux else up_factor
+#         self.conv_out = nn.Sequential(
+#             nn.Sequential(
+#                 nn.Upsample(scale_factor=2),
+#                 ConvBNReLU(mid_chan, mid_chan2, 3, stride=1)
+#                 ) if aux else nn.Identity(),
+#             nn.Conv2d(mid_chan2, out_chan, 1, 1, 0, bias=True),
+#             nn.Upsample(scale_factor=up_factor, mode='bilinear', align_corners=False)
+#         )
+
+#     def forward(self, x):
+#         feat = self.conv(x)
+#         feat = self.drop(feat)
+#         feat = self.conv_out(feat)
+#         return feat
 
 class Instance_SegmentHead(nn.Module):
 
@@ -708,9 +770,7 @@ class Instance_SegmentHead(nn.Module):
         feat = self.conv_out(feat)
         return feat
 
-
 class BiSeNetV2(nn.Module):
-
     def __init__(self, n_classes, aux_mode='train'):
         super(BiSeNetV2, self).__init__()
         self.aux_mode = aux_mode
@@ -719,7 +779,7 @@ class BiSeNetV2(nn.Module):
         self.bga = BGALayer()
 
         ## TODO: what is the number of mid chan ?
-        self.binary_head = Binary_SegmentHead(128, 1024, n_classes, up_factor=8, aux=False)
+        self.binary_head = binary_segmenthead(128, 1024, n_classes, scale_factor = 8)
         self.instance_head = Instance_SegmentHead(128, 1024, n_classes = 128, up_factor=8, aux=False)
         # if self.aux_mode == 'train':
         #     self.aux2 = Binary_SegmentHead(16, 128, n_classes, up_factor=4)
@@ -736,17 +796,12 @@ class BiSeNetV2(nn.Module):
         feat_head = self.bga(feat_d, feat_s)
         # print(f"hahhahha = {feat_head.shape}")
 
-        binary_logits = self.binary_head(feat_head)
+        binary_logits,con0 = self.binary_head(feat_head)
         instance_logits = self.instance_head(feat_head)
         if self.aux_mode == 'train':
-            return binary_logits, instance_logits
+            return binary_logits, instance_logits,con0
         elif self.aux_mode == 'eval':
-            return binary_logits, instance_logits
-        # elif self.aux_mode == 'pred':
-        #     pred = logits.argmax(dim=1)
-        #   return pred
-        else:
-            raise NotImplementedError
+            return binary_logits, instance_logits,con0
 
     def init_weights(self):
         for name, module in self.named_modules():
@@ -786,7 +841,6 @@ class BiSeNetV2(nn.Module):
             else:
                 add_param_to_list(child, wd_params, nowd_params)
         return wd_params, nowd_params, lr_mul_wd_params, lr_mul_nowd_params
-
 
 class SNN_BiSeNetV2(nn.Module):
     def __init__(self, n_classes, aux_mode='train'):
@@ -900,7 +954,33 @@ class LaneNetBackEnd(nn.Module):
 
         return binary_seg_prediction, instance_seg_prediction
 
+class firstNet(nn.Module):
+    def __init__(self, n_classes,embedding_dims,aux_mode='train'):
+        super(firstNet, self).__init__()
+        self.aux_mode = aux_mode
+        self.bisenet = BiSeNetV2(n_classes=n_classes)
+        self.backend = LaneNetBackEnd(embedding_dims=embedding_dims, num_classes=n_classes)
+    def forward(self, x):
+        H, W = x.size()[2:]
+        binary_seg_logits, middle_instance_seg_logits,con0 = self.bisenet(x)
+        binary_seg_prediction, instance_seg_logits = self.backend(binary_seg_logits, middle_instance_seg_logits)
 
+        binary_out = F.interpolate(binary_seg_logits, (H, W), mode='bilinear', align_corners=True)
+        instance_out = F.interpolate(instance_seg_logits, (H, W), mode='bilinear', align_corners=True)
+        connet0 = F.interpolate(con0, (H, W), mode='bilinear', align_corners=True)
+
+        if self.aux_mode == "train":
+            return {
+                'binary_logits': binary_out,
+                'seg_logits': instance_out,
+                'con0': connet0,
+            }   
+        else:
+            return {
+                'binary_logits': binary_out,
+                'seg_logits': instance_out,
+                'con0': connet0,
+            }  
 
 def my_hook(Module, input, output):
     outshapes.append(output.shape)
