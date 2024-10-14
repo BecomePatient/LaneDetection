@@ -35,7 +35,9 @@
 $$
 ACC_{pixel} = \frac{1}{c_1}\ \sum_{i=1}^{c_1}\max\sum_{j=1}^{c_2}match(c_{1i}-c_{2j})
 $$
+
 *match*函数被定义为两条苗带的匹配程度计算公式如下,假设存在两条苗带$l_1,l_2$,$l_1,l_2$分别表示一系列苗带点：
+
 $$
 min_{height} = \max(\min(l_1[0],\min(l_2[0]))
 $$
@@ -47,7 +49,7 @@ $$
 $$
 f(i)=\begin{cases}
 1 & \ |l_{1}[1][i] - l_{2}[1][i]| < Threshold \\
-0 & |l_{1}[1][i] - l_{2}[1][i]| >= Threshold \\ 
+0 & \ |l_{1}[1][i] - l_{2}[1][i]| >= Threshold \\ 
 \end{cases}
 $$
 
@@ -117,7 +119,7 @@ pip install requirements.txt
   ```
 
   .
-  
+
   ├── **binary_image**
 
   ├── connect_8_d1
